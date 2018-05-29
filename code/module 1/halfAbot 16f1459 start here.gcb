@@ -1,0 +1,31 @@
+'''A demonstration program for GCGB and GCB.
+'''--------------------------------------------------------------------------------------------------------------------------------
+'''This program is a demonstration of a Flashing LED.
+'''The LED array must be attached via appropiate resistors.
+'''********************************************************************************
+
+; ----- Configuration
+  #chip 16f1459, 48
+  #option bootloader 0x200   'must for usb Bootloader
+  #option NoConfig           'Tells compiler not to set config bits
+  #option explicit           'All variables must be declared!
+
+
+
+; ----- Define Hardware settings
+  dir PORTc.6 out
+
+
+;----- Variables
+'  Dim PWMCOUNT, PWMLEVEL as Byte   ' to do
+
+; ----- Main body of program commences here.
+ Main:
+
+  set PORTc.6 on
+  wait 1 s
+  set PORTc.6 off
+  wait 1 s
+
+ goto Main
+ end

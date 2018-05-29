@@ -1,0 +1,106 @@
+'''A demonstration program for GCGB and GCB.
+'''--------------------------------------------------------------------------
+'''This program is a demonstration of using bumpers
+'''The bumpers must be attached via appropiate pulldown resistors.
+'''When bumper hit, the robot will reverse for half a second,
+'''and then turn in the opposite direction for half a second.
+'''**************************************************************************
+
+; ----- Configuration
+  #chip 16f1459, 48
+  #option bootloader 0x200   'must for usb Bootloader
+  #option NoConfig           'Tells compiler not to set config bits
+  #option explicit           'All variables must be declared!
+
+
+
+; ----- Define Hardware settings
+  #define button       PORTc.4      'C4 is allways an input and the Button
+  #define LeftMotor    PORTc.5      ' In this section we are creating
+  #define RightMotor   PORTc.6      ' new names for the hardware ports
+  #define LeftReverse  PORTa.5      ' called an alias. This is done in
+  #define RightReverse PORTa.4      ' order to make it easyer to use in
+  #define LeftBumper   PORTc.3      ' our program and easyer to move the
+  #define RightBumper  PORTc.7      ' program to a different microcontroller
+  #define reversetime  500          ' constant
+
+  dir LeftMotor    out      'Set LeftMotor (PORTc.5) as an output
+  dir RightMotor   out       ' ditto
+  dir LeftReverse  out
+  dir RightReverse out
+  dir LeftBumper   in       'Set LeftBumper (PORTb.5) as an input
+  dir RightBumper  in
+
+
+
+;----- Variables
+'  Dim PWMCOUNT, PWMLEVEL as Byte   ' to do
+
+; ----- Main body of program commences here.
+
+wait while button = 1   'Do not start the program until Button is pressed.
+                        ' Button is connected to a PULL UP resistor (+5V),
+                        ' so it allways reads 0 when pressed and 1 when not
+                        ' pressed
+
+ Main:
+
+  set LeftReverse off       'set motors to run forward and turn them on
+  set RightReverse off
+  set LeftMotor on
+  set RightMotor on
+
+  if LeftBumper = 1 then  'If left bumper pressed:
+
+   reverse   'call the subroutine named reverse
+
+   wait 10 ms             ' wait 10 ms (back emf)
+   set LeftReverse Off
+   set RightReverse On    'set right motor to reverse
+   set LeftMotor off
+   set RightMotor on
+   wait 500 ms            'let motors run for 500 ms (turning)
+   set LeftReverse Off
+   set RightReverse Off   'turn them off
+   set LeftMotor off
+   set RightMotor off
+   wait 10 ms             ' wait 10 ms (back emf)
+  end if
+
+  if RightBumper = 1 then 'If right bumper pressed:
+
+   reverse        'call the subroutine named reverse
+
+   wait 10 ms
+   set LeftReverse On     'set left motor to reverse
+   set RightReverse Off
+   set LeftMotor on
+   set RightMotor off
+   wait 500 ms
+   set LeftReverse Off
+   set RightReverse Off
+   set LeftMotor off
+   set RightMotor off
+   wait 10 ms
+  end if
+
+ goto Main
+ end
+
+'********************************* Subroutines *******************************************
+
+
+sub reverse                'this subroutine lets the robot reverse for the duration of reversetime
+   set LeftMotor off
+   set RightMotor off     ' turn motors off
+   wait 10 ms             ' wait 10 ms (back emf)
+   set LeftReverse on
+   set RightReverse on    'set reverse on, turn motors on
+   set LeftMotor on
+   set RightMotor on
+   wait reversetime ms           'let motors run for 500 ms (1/2 second)
+   set LeftReverse Off
+   set RightReverse Off   'turn them off
+   set LeftMotor off
+   set RightMotor off
+end sub
