@@ -13,7 +13,7 @@
 
 
 ; ----- Define Hardware settings
-  dir PORTc.6 out
+  dir PORTc.5 out
 
 
 ;----- Variables
@@ -22,9 +22,9 @@
 ; ----- Main body of program commences here.
  Main:
 
-  set PORTc.6 on
+  set PORTc.5 on
   wait 1 s
-  set PORTc.6 off
+  set PORTc.5 off
   wait 1 s
 
  goto Main
