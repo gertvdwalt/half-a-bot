@@ -1,0 +1,65 @@
+'''A demonstration program for GCGB and GCB.
+'''--------------------------------------------------------------------------------------------------------------------------------
+'''This program is a simple GLCD demonstration of the '''A demonstration program for GCGB and GCB.
+'''--------------------------------------------------------------------------------------------------------------------------------
+'''This program is a simple GLCD demonstration of the SSD1306 GLCD capabilities.
+'''The SSD1306 controller a small graphical OLED, suitable for a lot of various projects.
+'''The display is 38*17 mm, with an active display surface of 0.96inches , and a 128*32 pixel resolution.
+'''The display is easy to interface, using an I2C type of communication.
+'''The GLCD is connected to the microprocessor as shown in the hardware section of this code.
+'''
+'''This version is compatible will all version of Great Cow BASIC but only version greater than v0.98.00 support low memory GLCD modes.
+'''
+'''@author  EvanV / Gert vd Walt
+'''@licence GPL
+'''@version 2.1
+'''@date    27.8.17
+'''********************************************************************************
+
+; ----- Configuration
+  #chip 16f1459, 48
+  #option bootloader 0x200   'must for usb Bootloader
+  #option NoConfig           'Tells compiler not to set config bits
+  #option explicit           'All variables must be declared!
+
+  ' Define I2C settings - CHANGE PORTS, turn on I2C module
+  #define I2C_MODE Master   'I2C can be used as a master or slave, We want master, it controls the slave(s) (OLED)
+  #define I2C_DATA PORTB.4
+  #define I2C_CLOCK PORTB.6
+  #define I2C_DISABLE_INTERRUPTS ON   'Interrupts will be discussed later, for now just use as is
+
+
+; ----- Define GLCD Hardware settings
+  #include <glcd.h>   'Call the library for the OLED. All the commands to control then is included in this
+
+  #define GLCD_TYPE GLCD_TYPE_SSD1306 'we need to specify the controller of the OLED, this identifie the type of display
+  #define GLCD_I2C_Address 0x78       'every device on the I2C bus must have an adress since more than one device can share the bus
+  #define GLCD_TYPE_SSD1306_CHARACTER_MODE_ONLY 'We use the lowest memory mode. See GCB examples for more modes
+
+
+; ----- Define variables
+
+  Dim ShowNumber as Byte 'Number to be displayed on OLED
+
+
+; ----- Main program
+
+
+ GLCDCLS    'clear screen of display
+ wait 10 ms
+
+ do
+        GLCDPrint (1, 2, "Hello Robot builders!")
+        GLCDPrint (1, 16, "My name is 1/2-a-bot")
+        GLCDPrint (1, 32, "I can count:")
+        GLCDPrint (80,32, "   ")              'clear the display at that spot
+        GLCDPrint (80,32, ShowNumber)
+
+        ShowNumber = ShowNumber + 1 'add one to ShowNumber
+
+        if ShowNumber = 21 then ShowNumber = 0 'if 21, start again
+        wait 500 ms
+
+  loop    'infinite loop
+
+  end
