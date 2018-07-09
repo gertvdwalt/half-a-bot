@@ -1,0 +1,117 @@
+'My attempt at a line following for ½-a-bot.
+'Line following is dependent upon a lot of factors so experimentation is needed.
+'This is by No means the best way of doing it.
+'
+' For half a bot on great cow basic
+
+
+; ----- Configuration
+
+  #chip 16f1459, 48
+  #option bootloader 0x200   'must for usb Bootloader
+  #option NoConfig
+  #option explicit
+
+' #include :'[todo]
+
+; ----- Define Hardware settings
+
+#define USE_HPWM1 TRUE
+#define USE_HPWM2 TRUE
+
+; ----- Define Hardware settings
+dir PORTc.5 out  'pwm1 left
+dir PORTc.6 out  'pwm2 right
+dir PORTa.5 out  'dir 1
+dir PORTa.4 out  'dir 2
+dir PORTc.4 in  'button
+
+#define reverse1 porta.5
+#define reverse2 porta.4
+
+; ----- Variables
+Dim linesense as byte
+
+; ----- Main body of program commences here.
+
+ set reverse1 off
+ set reverse2 off
+
+wait while portc.4 = 1
+
+linesense = 0
+
+ do
+    ' calibrate the if values to your robot with OLED program
+
+  if ReadAD10(AN4) > 500 then  'right  set first bit of linesense
+   linesense.0 = 1          '00000001
+  else                      '76543210
+   linesense.0 = 0
+  end if
+
+  if ReadAD10(AN5) > 500 then   'middle set the second bit of linesense
+   linesense.1 = 1
+  else
+   linesense.1 = 0
+  end if
+
+  if ReadAD10(AN6) > 500 then   'left set the third bit of linesense
+   linesense.2 = 1
+  else
+   linesense.2 = 0
+  end if
+
+
+  select case linesense
+   case 7           '111
+    'do nothing
+   case 6           '110
+    turnright
+   case 5           '101
+    'do nothing
+   case 4           '100
+    turnleft
+   case 3           '011
+    turnleft
+   case 2           '010
+    forward
+   case 1           '001
+    turnright
+   case 0           '000
+    forward
+  end select
+
+ loop
+
+End
+
+sub forward
+
+ set reverse1 off
+ set reverse2 off
+
+  HPWM 1, 100, 130 , 2       '* experiment for your robot
+  HPWM 2, 100, 130 , 2       '* to change the duration (third value)
+
+end sub
+
+sub turnleft
+
+ set reverse1 on        'left
+ set reverse2 off       'right
+
+  HPWM 1, 100, 255 , 2  ' left    *full power
+  HPWM 2, 100, 255 , 2  ' right   *on both to make tuns fast
+
+end sub
+
+sub turnright
+
+ set reverse1 off      'left
+ set reverse2 on       'right
+
+  HPWM 1, 100, 255 , 2  ' left    *full power
+  HPWM 2, 100, 255 , 2  ' right   *on both to make turns fast
+
+end sub
