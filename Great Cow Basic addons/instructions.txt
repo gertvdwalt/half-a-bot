@@ -1,5 +1,0 @@
-This is for GCB 0.98.02 and newer
-
-Copy "dfu" and "GreatCowBasic" folders into GCB@SYN folder.
-Overwrite current files.
-
