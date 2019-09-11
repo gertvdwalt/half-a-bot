@@ -1,0 +1,60 @@
+'this sends an increasing dutycycle to he pwm units for the motors
+'use to find mimimum duty cycle for your robots motors
+'
+'
+' For half a bot on great cow basic
+
+
+; ----- Configuration
+
+  #chip 16f1459, 48
+  #option bootloader 0x200   'must for usb Bootloader
+  #option NoConfig
+  #option explicit
+
+' #include :'[todo]
+
+  ' Define I2C settings - CHANGE PORTS, turn on I2C module
+  #define I2C_MODE Master   'I2C can be used as a master or slave, We want master, it controls the slave(s) (OLED)
+  #define I2C_DATA PORTB.4
+  #define I2C_CLOCK PORTB.6
+  #define I2C_DISABLE_INTERRUPTS ON   'Interrupts will be discussed later, for now just use as is
+
+
+; ----- Define GLCD Hardware settings
+  #include <glcd.h>   'Call the library for the OLED. All the commands to control then is included in this
+
+  #define GLCD_TYPE GLCD_TYPE_SSD1306 'we need to specify the controller of the OLED, this identifie the type of display
+  #define GLCD_I2C_Address 0x78       'every device on the I2C bus must have an adress since more than one device can share the bus
+  #define GLCD_TYPE_SSD1306_CHARACTER_MODE_ONLY 'We use the lowest memory mode. See GCB examples for more modes
+
+
+; ----- Define Hardware settings
+
+#define USE_HPWM1 TRUE
+#define USE_HPWM2 TRUE
+
+; ----- Define Hardware settings
+dir PORTc.5 out  'pwm1 left
+dir PORTc.6 out  'pwm2 right
+
+; ----- Variables
+Dim duty as byte
+
+; ----- Main body of program commences here.
+
+duty = 0                   'initialise variable
+
+ do
+  wait while portc.4 = 1
+  duty = duty + 10            'increase the value of duty cycle by 10
+  if duty > 255 then duty = 0  'when duty cycle exceeds 255 start over
+  HPWM 1, 100, duty , 2       'send pwm to motor 1
+  HPWM 2, 100, duty , 2       'send pwm to motor 2
+  GLCDCLS    'clear screen of display
+  GLCDPrint (1, 2, duty)
+  wait 500 ms                 'software button debounce.
+ loop
+
+End
+
