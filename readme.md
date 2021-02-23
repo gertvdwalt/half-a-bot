@@ -1,6 +1,5 @@
-**This repository is for the ½-a-bot robot (pronounced half-a-bot)**
+**This repository is for the Â½-a-bot robot (pronounced half-a-bot)**
 
-**Might be on sale at**  **PiShop.co.za**
 
 **Tutorials can be found on:**
 
